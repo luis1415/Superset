@@ -36,7 +36,6 @@ stats_logger = config.get('STATS_LOGGER')
 
 
 class BaseViz(object):
-
     """All visualizations derive this base class"""
 
     viz_type = None
@@ -158,7 +157,7 @@ class BaseViz(object):
             'druid_time_origin': form_data.get("druid_time_origin", ''),
         }
         filters = form_data['filters'] if 'filters' in form_data \
-                else []
+            else []
         for col, vals in self.get_extra_filters().items():
             if not (col and vals) or col.startswith('__'):
                 continue
@@ -192,8 +191,8 @@ class BaseViz(object):
         if self.datasource.cache_timeout:
             return self.datasource.cache_timeout
         if (
-                hasattr(self.datasource, 'database') and
-                self.datasource.database.cache_timeout):
+                    hasattr(self.datasource, 'database') and
+                    self.datasource.database.cache_timeout):
             return self.datasource.database.cache_timeout
         return config.get("CACHE_DEFAULT_TIMEOUT")
 
@@ -246,20 +245,63 @@ class BaseViz(object):
                 self.status = utils.QueryStatus.FAILED
                 data = None
                 stacktrace = traceback.format_exc()
-            payload = {
-                'cache_key': cache_key,
-                'cache_timeout': cache_timeout,
-                'data': data,
-                'error': self.error_message,
-                'form_data': self.form_data,
-                'query': self.query,
-                'status': self.status,
-                'stacktrace': stacktrace,
-            }
-            payload['cached_dttm'] = datetime.utcnow().isoformat().split('.')[0]
+            payload = {'cache_key': cache_key, 'cache_timeout': cache_timeout, 'data': data,
+                       'error': self.error_message, 'form_data': self.form_data, 'query': self.query,
+                       'status': self.status, 'stacktrace': stacktrace,
+                       'cached_dttm': datetime.utcnow().isoformat().split('.')[0]}
             logging.info("Caching for the next {} seconds".format(
                 cache_timeout))
             data = self.json_dumps(payload)
+            '''
+            print("---------------Modificando payload: tipo de grafica------------")
+            print(payload)
+
+            if payload['form_data'][u'viz_type'] == 'histogram':
+                print(payload['data'])
+
+            if 'dist_bar' == payload['form_data'][u'viz_type']:
+                print('es una grafica de distribucion de barras')
+                # print(payload['data'])
+
+                datos_mujer = payload['data'][0]['values']
+                datos_hombre = payload['data'][1]['values']
+                print("datos hombres", len(datos_hombre))
+                print("datos mujer", len(datos_mujer))
+                maximo_y = 0
+                maximo_x = 0
+                total = 0.0
+                import math as m
+                for i in datos_hombre:
+
+                    if not m.isnan(i[u'y']):
+                        total += float(i[u'y'])
+                    print(i)
+                    if i[u'y'] > maximo_y:
+                        maximo_y = i[u'y']
+                    if i[u'x'] > maximo_x:
+                        maximo_x = i[u'x']
+
+                print("maximos: ", maximo_y, maximo_x)
+
+                # se cambian los valores de la grafica por valores porcentuales
+                print("total gente: ", total)
+
+                for i in payload['data'][0]['values']:
+                    if not m.isnan(i[u'y']):
+                        i[u'y'] = 100.0*float(i[u'y'])/(total*100)
+                        # i[u'y'] = i[u'y'] /100
+
+                for i in payload['data'][1]['values']:
+                    if not m.isnan(i[u'y']):
+                        i[u'y'] = 100.0*float(i[u'y'])/(total*100)
+                        # i[u'y'] = i[u'y'] / 100
+
+                print(type(payload['data'][0]['values'][0][u'y']))
+
+                import pprint
+                pprint.pprint(payload, depth=2)
+                payload['nuevo_dato'] = 'nuevo_dato'            
+            '''
             if PY3:
                 data = bytes(data, 'utf-8')
             if cache and self.status != utils.QueryStatus.FAILED:
@@ -305,7 +347,6 @@ class BaseViz(object):
 
 
 class TableViz(BaseViz):
-
     """A basic html table that is sortable and searchable"""
 
     viz_type = "table"
@@ -355,7 +396,6 @@ class TableViz(BaseViz):
 
 
 class PivotTableViz(BaseViz):
-
     """A pivot table view, define your rows, columns and metrics"""
 
     viz_type = "pivot_table"
@@ -377,8 +417,8 @@ class PivotTableViz(BaseViz):
         if not metrics:
             raise Exception("Please choose at least one metric")
         if (
-                any(v in groupby for v in columns) or
-                any(v in columns for v in groupby)):
+                    any(v in groupby for v in columns) or
+                    any(v in columns for v in groupby)):
             raise Exception("groupby and columns can't overlap")
 
         d['groupby'] = list(set(groupby) | set(columns))
@@ -386,8 +426,8 @@ class PivotTableViz(BaseViz):
 
     def get_data(self, df):
         if (
-                self.form_data.get("granularity") == "all" and
-                DTTM_ALIAS in df):
+                        self.form_data.get("granularity") == "all" and
+                        DTTM_ALIAS in df):
             del df[DTTM_ALIAS]
         df = df.pivot_table(
             index=self.form_data.get('groupby'),
@@ -407,7 +447,6 @@ class PivotTableViz(BaseViz):
 
 
 class MarkupViz(BaseViz):
-
     """Use html or markdown to create a free form widget"""
 
     viz_type = "markup"
@@ -426,7 +465,6 @@ class MarkupViz(BaseViz):
 
 
 class SeparatorViz(MarkupViz):
-
     """Use to create section headers in a dashboard, similar to `Markup`"""
 
     viz_type = "separator"
@@ -438,7 +476,6 @@ class SeparatorViz(MarkupViz):
 
 
 class WordCloudViz(BaseViz):
-
     """Build a colorful word cloud
 
     Uses the nice library at:
@@ -465,7 +502,6 @@ class WordCloudViz(BaseViz):
 
 
 class TreemapViz(BaseViz):
-
     """Tree map visualisation for hierarchical data."""
 
     viz_type = "treemap"
@@ -491,7 +527,6 @@ class TreemapViz(BaseViz):
 
 
 class CalHeatmapViz(BaseViz):
-
     """Calendar heatmap."""
 
     viz_type = "cal_heatmap"
@@ -504,8 +539,8 @@ class CalHeatmapViz(BaseViz):
         form_data = self.form_data
 
         df.columns = ["timestamp", "metric"]
-        timestamps = {str(obj["timestamp"].value / 10**9):
-                      obj.get("metric") for obj in df.to_dict("records")}
+        timestamps = {str(obj["timestamp"].value / 10 ** 9):
+                          obj.get("metric") for obj in df.to_dict("records")}
 
         start = utils.parse_human_datetime(form_data.get("since"))
         end = utils.parse_human_datetime(form_data.get("until"))
@@ -520,9 +555,9 @@ class CalHeatmapViz(BaseViz):
         elif domain == "week":
             range_ = diff_delta.years * 53 + diff_delta.weeks + 1
         elif domain == "day":
-            range_ = diff_secs // (24*60*60) + 1
+            range_ = diff_secs // (24 * 60 * 60) + 1
         else:
-            range_ = diff_secs // (60*60) + 1
+            range_ = diff_secs // (60 * 60) + 1
 
         return {
             "timestamps": timestamps,
@@ -539,7 +574,6 @@ class CalHeatmapViz(BaseViz):
 
 
 class NVD3Viz(BaseViz):
-
     """Base class for all nvd3 vizs"""
 
     credits = '<a href="http://nvd3.org/">NVD3.org</a>'
@@ -549,7 +583,6 @@ class NVD3Viz(BaseViz):
 
 
 class BoxPlotViz(NVD3Viz):
-
     """Box plot viz from ND3"""
 
     viz_type = "box_plot"
@@ -638,7 +671,6 @@ class BoxPlotViz(NVD3Viz):
 
 
 class BubbleViz(NVD3Viz):
-
     """Based on the NVD3 bubble chart"""
 
     viz_type = "bubble"
@@ -688,7 +720,6 @@ class BubbleViz(NVD3Viz):
 
 
 class BulletViz(NVD3Viz):
-
     """Based on the NVD3 bullet chart"""
 
     viz_type = "bullet"
@@ -737,7 +768,6 @@ class BulletViz(NVD3Viz):
 
 
 class BigNumberViz(BaseViz):
-
     """Put emphasis on a single metric with this big number viz"""
 
     viz_type = "big_number"
@@ -766,7 +796,6 @@ class BigNumberViz(BaseViz):
 
 
 class BigNumberTotalViz(BaseViz):
-
     """Put emphasis on a single metric with this big number viz"""
 
     viz_type = "big_number_total"
@@ -793,7 +822,6 @@ class BigNumberTotalViz(BaseViz):
 
 
 class NVD3TimeSeriesViz(NVD3Viz):
-
     """A rich line chart component with tons of options"""
 
     viz_type = "line"
@@ -920,7 +948,6 @@ class NVD3TimeSeriesViz(NVD3Viz):
 
 
 class NVD3DualLineViz(NVD3Viz):
-
     """A rich line chart with dual axis"""
 
     viz_type = "dual_line"
@@ -970,7 +997,7 @@ class NVD3DualLineViz(NVD3Viz):
                     {'x': ds, 'y': ys[ds] if ds in ys else None}
                     for ds in df.index
                 ],
-                "yAxis": i+1,
+                "yAxis": i + 1,
                 "type": "line"
             }
             chart_data.append(d)
@@ -994,7 +1021,6 @@ class NVD3DualLineViz(NVD3Viz):
 
 
 class NVD3TimeSeriesBarViz(NVD3TimeSeriesViz):
-
     """A bar chart where the x axis is time"""
 
     viz_type = "bar"
@@ -1003,7 +1029,6 @@ class NVD3TimeSeriesBarViz(NVD3TimeSeriesViz):
 
 
 class NVD3CompareTimeSeriesViz(NVD3TimeSeriesViz):
-
     """A line chart component where you can compare the % change over time"""
 
     viz_type = 'compare'
@@ -1011,7 +1036,6 @@ class NVD3CompareTimeSeriesViz(NVD3TimeSeriesViz):
 
 
 class NVD3TimeSeriesStackedViz(NVD3TimeSeriesViz):
-
     """A rich stack area chart"""
 
     viz_type = "area"
@@ -1020,7 +1044,6 @@ class NVD3TimeSeriesStackedViz(NVD3TimeSeriesViz):
 
 
 class DistributionPieViz(NVD3Viz):
-
     """Annoy visualization snobs with this controversial pie chart"""
 
     viz_type = "pie"
@@ -1038,7 +1061,6 @@ class DistributionPieViz(NVD3Viz):
 
 
 class HistogramViz(BaseViz):
-
     """Histogram"""
 
     viz_type = "histogram"
@@ -1063,7 +1085,6 @@ class HistogramViz(BaseViz):
 
 
 class DistributionBarViz(DistributionPieViz):
-
     """A good old bar chart"""
 
     viz_type = "dist_bar"
@@ -1130,7 +1151,6 @@ class DistributionBarViz(DistributionPieViz):
 
 
 class SunburstViz(BaseViz):
-
     """A multi level sunburst chart"""
 
     viz_type = "sunburst"
@@ -1163,7 +1183,6 @@ class SunburstViz(BaseViz):
 
 
 class SankeyViz(BaseViz):
-
     """A Sankey diagram that requires a parent-child dataset"""
 
     viz_type = "sankey"
@@ -1212,7 +1231,6 @@ class SankeyViz(BaseViz):
 
 
 class DirectedForceViz(BaseViz):
-
     """An animated directed force layout graph visualization"""
 
     viz_type = "directed_force"
@@ -1233,7 +1251,6 @@ class DirectedForceViz(BaseViz):
 
 
 class ChordViz(BaseViz):
-
     """A Chord diagram"""
 
     viz_type = "chord"
@@ -1266,7 +1283,6 @@ class ChordViz(BaseViz):
 
 
 class CountryMapViz(BaseViz):
-
     """A country centric"""
 
     viz_type = "country_map"
@@ -1295,7 +1311,6 @@ class CountryMapViz(BaseViz):
 
 
 class WorldMapViz(BaseViz):
-
     """A country centric world map"""
 
     viz_type = "world_map"
@@ -1345,7 +1360,6 @@ class WorldMapViz(BaseViz):
 
 
 class FilterBoxViz(BaseViz):
-
     """A multi filter, multi-choice filter box to make dashboards interactive"""
 
     viz_type = "filter_box"
@@ -1380,7 +1394,6 @@ class FilterBoxViz(BaseViz):
 
 
 class IFrameViz(BaseViz):
-
     """You can squeeze just about anything in this iFrame component"""
 
     viz_type = "iframe"
@@ -1389,11 +1402,10 @@ class IFrameViz(BaseViz):
     is_timeseries = False
 
     def get_df(self):
-       return None
+        return None
 
 
 class ParallelCoordinatesViz(BaseViz):
-
     """Interactive parallel coordinate implementation
 
     Uses this amazing javascript library
@@ -1422,7 +1434,6 @@ class ParallelCoordinatesViz(BaseViz):
 
 
 class HeatmapViz(BaseViz):
-
     """A nice heatmap visualization that support high density through canvas"""
 
     viz_type = "heatmap"
@@ -1470,7 +1481,6 @@ class HeatmapViz(BaseViz):
 
 
 class HorizonViz(NVD3TimeSeriesViz):
-
     """Horizon chart
 
     https://www.npmjs.com/package/d3-horizon-chart
@@ -1484,7 +1494,6 @@ class HorizonViz(NVD3TimeSeriesViz):
 
 
 class MapboxViz(BaseViz):
-
     """Rich maps made with Mapbox"""
 
     viz_type = "mapbox"
@@ -1514,18 +1523,18 @@ class MapboxViz(BaseViz):
         else:
             # Ensuring columns chosen are all in group by
             if (label_col and len(label_col) >= 1 and
-                    label_col[0] != "count" and
-                    label_col[0] not in fd.get('groupby')):
+                        label_col[0] != "count" and
+                        label_col[0] not in fd.get('groupby')):
                 raise Exception(
                     "Choice of [Label] must be present in [Group By]")
 
             if (fd.get("point_radius") != "Auto" and
-                    fd.get("point_radius") not in fd.get('groupby')):
+                        fd.get("point_radius") not in fd.get('groupby')):
                 raise Exception(
                     "Choice of [Point Radius] must be present in [Group By]")
 
             if (fd.get('all_columns_x') not in fd.get('groupby') or
-                    fd.get('all_columns_y') not in fd.get('groupby')):
+                        fd.get('all_columns_y') not in fd.get('groupby')):
                 raise Exception(
                     "[Longitude] and [Latitude] columns must be present in [Group By]")
         return d

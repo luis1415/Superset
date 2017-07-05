@@ -130,9 +130,9 @@ if (process.env.NODE_ENV === 'production') {
     sourceMap: false,
     minimize: true,
     compress: {
-      drop_debugger: true,
+      drop_debugger: false,
       warnings: false,
-      drop_console: true,
+      drop_console: false,
     },
   });
   config.plugins.push(UJSplugin);

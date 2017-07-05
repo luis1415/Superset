@@ -17,7 +17,7 @@ const animationTime = 1000;
 const BREAKPOINTS = {
   small: 340,
 };
-
+console.log("hola mundo");
 const addTotalBarValues = function (svg, chart, data, stacked, axisFormat) {
   const format = d3.format(axisFormat || '.3s');
   const countSeriesDisplayed = data.length;

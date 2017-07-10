@@ -1,0 +1,17 @@
+Notas:
+
+La configuración de superset esta en el import en superset conf.
+
+para la instalación mirar el archivo que esta en docs instalations.rst
+para hacer cambios mirar el archivo CONTRIBUTING.md
+
+la base de datos queda guardada en DATA_DIR = os.path.join(os.path.expanduser('~'), '.superset').
+
+de la linea 83 del archivo bootswatch.less quite una coma. antes del parentesis.
+
+El logo se cambia en el archivo de configuración que está en los imports.
+
+La modificación para que reciba porcentaje se hizo en viz.py en la linea 257.
+
+db:
+70190225-42960 raras

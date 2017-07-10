@@ -261,7 +261,7 @@ class BaseViz(object):
                 payload['nuevo_dato'] = 'nuevo_dato'
 
             if 'dist_bar' == payload['form_data'][u'viz_type'] and payload['form_data'][u'y_axis_format'] == u'.3%':
-                print('es una grafica de distribucion de barras')
+                print('Porcentaje en distribucion de barras')
 
                 for d_ in range(len(payload['data'])):
                     datos_ = payload['data'][d_]['values']
@@ -280,7 +280,7 @@ class BaseViz(object):
                     for i in range(len(payload['data'])):
                         for j in payload['data'][i]['values']:
                             if not math.isnan(j[u'y']):
-                                j[u'y'] = float(j[u'y']) / total
+                                j[u'y'] = j[u'y'] / total
 
             '''-------------------------'''
             if PY3:

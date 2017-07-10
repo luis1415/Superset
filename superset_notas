@@ -13,5 +13,13 @@ El logo se cambia en el archivo de configuración que está en los imports.
 
 La modificación para que reciba porcentaje se hizo en viz.py en la linea 257.
 
+Para modificar el color esta en Superset/superset/static/assets/javascript/modules/colors.js
+
+Para hacer prints en js:
+(function(){console.log(payload.form_data.bar_stacked); return 1})()
+
+Para rotar la grafica .attr("transform","rotate(45)") nvd3_vis.js en la linea 123
+Para rotar los labels es en la linea 185
+
 db:
 70190225-42960 raras

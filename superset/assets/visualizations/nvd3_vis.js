@@ -17,7 +17,7 @@ const animationTime = 1000;
 const BREAKPOINTS = {
   small: 340,
 };
-console.log("hola mundo");
+
 const addTotalBarValues = function (svg, chart, data, stacked, axisFormat) {
   const format = d3.format(axisFormat || '.3s');
   const countSeriesDisplayed = data.length;
@@ -120,6 +120,10 @@ function nvd3Vis(slice, payload) {
     let svg = d3.select(slice.selector).select('svg');
     if (svg.empty()) {
       svg = d3.select(slice.selector).append('svg');
+      //(function(){console.log(typeof payload.form_data.bar_stacked); return 1})()
+      if (payload.form_data.bar_stacked) {
+          svg.attr("transform","rotate(90)")
+      }
     }
     switch (vizType) {
       case 'line':
@@ -176,6 +180,11 @@ function nvd3Vis(slice, payload) {
         .rotateLabels(45)
         .groupSpacing(0.1); // Distance between each group of bars.
 
+        // Si es un diagrama de barras apiladas entonces los labels se ponen horizontales
+        if (payload.form_data.bar_stacked) {
+          chart.rotateLabels(-90)
+            .groupSpacing(0.1)
+        }
         chart.xAxis
         .showMaxMin(false);
 
@@ -221,6 +230,7 @@ function nvd3Vis(slice, payload) {
         chart = nv.models.multiBarChart()
         .reduceXTicks(false)
         .rotateLabels(45);
+
         break;
 
       case 'compare':

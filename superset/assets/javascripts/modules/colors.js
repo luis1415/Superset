@@ -5,7 +5,7 @@ import d3 from 'd3';
 export const bnbColors = [
     '#1e5daf',
     '#ff3842',
-    //'#19ff0f',
+    '#a0adaf',
 
     //'#5A79A5',
     //'#9CAAC6',

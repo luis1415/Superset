@@ -19,7 +19,7 @@ Para hacer prints en js:
 (function(){console.log(payload.form_data.bar_stacked); return 1})()
 
 Para rotar la grafica .attr("transform","rotate(45)") nvd3_vis.js en la linea 123
-Para rotar los labels es en la linea 185
+Para rotar los labels es en la linea 123, 204, 315 y 458 en el render
 
 db:
 70190225-42960 raras

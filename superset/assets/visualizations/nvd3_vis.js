@@ -120,9 +120,10 @@ function nvd3Vis(slice, payload) {
     let svg = d3.select(slice.selector).select('svg');
     if (svg.empty()) {
       svg = d3.select(slice.selector).append('svg');
-      //(function(){console.log(typeof payload.form_data.bar_stacked); return 1})()
+// ---> para ponerla horizontal
+      //(function(){console.log(barchartWidth()); return 1})()
       if (payload.form_data.bar_stacked) {
-          svg.attr("transform","rotate(90)")
+          svg.attr("transform","rotate(90)");
       }
     }
     switch (vizType) {
@@ -180,11 +181,6 @@ function nvd3Vis(slice, payload) {
         .rotateLabels(45)
         .groupSpacing(0.1); // Distance between each group of bars.
 
-        // Si es un diagrama de barras apiladas entonces los labels se ponen horizontales
-        if (payload.form_data.bar_stacked) {
-          chart.rotateLabels(-90)
-            .groupSpacing(0.1)
-        }
         chart.xAxis
         .showMaxMin(false);
 
@@ -204,6 +200,11 @@ function nvd3Vis(slice, payload) {
           width = barchartWidth();
         }
         chart.width(width);
+
+// ------>  Si es un diagrama de barras apiladas entonces los labels se ponen horizontales
+        if (payload.form_data.bar_stacked) {
+          chart.rotateLabels(-90);
+        }
         break;
 
       case 'pie':
@@ -304,10 +305,19 @@ function nvd3Vis(slice, payload) {
     if (vizType === 'bullet') {
       height = Math.min(height, 50);
     }
-
+    // cambio para horizontal en barras apiladas
+    if (vizType === 'dist_bar' && payload.form_data.bar_stacked) {
+      height = barchartWidth();
+    }
     chart.height(height);
-    slice.container.css('height', height + 'px');
 
+    slice.container.css('height', height + 'px');
+// cambio para horizontal en barras apiladas
+    if (vizType === 'dist_bar' && payload.form_data.bar_stacked) {
+      height = barchartWidth();
+      chart.height(height);
+      slice.container.css('height', height + 'px');
+    }
     if ((vizType === 'line' || vizType === 'area') && fd.rich_tooltip) {
       chart.useInteractiveGuideline(true);
     }
@@ -434,13 +444,26 @@ function nvd3Vis(slice, payload) {
         chart.margin({ bottom: maxXAxisLabelHeight + marginPad + 25 });
       }
 
-      // render chart
-      svg
-      .datum(payload.data)
-      .transition().duration(500)
-      .attr('height', height)
-      .attr('width', width)
-      .call(chart);
+      if (!payload.form_data.bar_stacked) {
+        // render chart
+        svg
+        .datum(payload.data)
+        .transition().duration(500)
+        .attr('height', height)
+        .attr('width', width)
+        .call(chart);
+      }
+
+// ------>  Si es un diagrama de barras apiladas horizontal
+      if (payload.form_data.bar_stacked) {
+        // render horizontal chart
+        svg
+        .datum(payload.data)
+        .transition().duration(500)
+        .attr('height', width)
+        .attr('width', height)
+        .call(chart);
+      }
     }
 
     // on scroll, hide tooltips. throttle to only 4x/second.

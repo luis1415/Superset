@@ -254,35 +254,28 @@ class BaseViz(object):
             logging.info("Caching for the next {} seconds".format(
                 cache_timeout))
             data = self.json_dumps(payload)
-            print("---------------Modificando payload: tipo de grafica para poner porcentajes-------------------------")
+            print(u"---------------Modificando payload: tipo de grafica para poner porcentajes-------------------------")
 
             if payload['form_data'][u'viz_type'] == 'histogram':
                 pprint.pprint(payload, depth=2)
-                payload['nuevo_dato'] = 'nuevo_dato'
+                # payload['nuevo_dato'] = 'nuevo_dato'
 
             if 'dist_bar' == payload['form_data'][u'viz_type'] and payload['form_data'][u'y_axis_format'] == u'.3%':
                 print('Porcentaje en distribucion de barras')
 
                 for d_ in range(len(payload['data'])):
                     datos_ = payload['data'][d_]['values']
-                    maximo_y = 0
-                    maximo_x = 0
                     total = 0.0
                     for i in datos_:
                         if not math.isnan(i[u'y']):
                             total += float(i[u'y'])
-                        print(i)
-                        if i[u'y'] > maximo_y:
-                            maximo_y = i[u'y']
-                        if i[u'x'] > maximo_x:
-                            maximo_x = i[u'x']
 
                     for i in range(len(payload['data'])):
                         for j in payload['data'][i]['values']:
                             if not math.isnan(j[u'y']):
                                 j[u'y'] = j[u'y'] / total
 
-            '''-------------------------'''
+            '''------------------------------------------------------------------------------------------------------'''
             if PY3:
                 data = bytes(data, 'utf-8')
             if cache and self.status != utils.QueryStatus.FAILED:

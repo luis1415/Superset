@@ -9,7 +9,7 @@ export const bnbColors = [
 
     //'#5A79A5',
     //'#9CAAC6',
-    /*
+
     '#ff5a5f', // rausch
     '#7b0051', // hackb
     '#007A87', // kazan
@@ -31,7 +31,7 @@ export const bnbColors = [
     '#55d12e',
     '#b37e00',
     '#988b4e',
-    */
+
 ];
 
 const spectrums = {

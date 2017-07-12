@@ -113,6 +113,8 @@ function nvd3Vis(slice, payload) {
   const vizType = fd.viz_type;
   const f = d3.format('.3s');
   const reduceXTicks = fd.reduce_x_ticks || false;
+// ---> modificación para hacer horizontal
+  const reduceYTicks = fd.reduce_y_ticks
   let stacked = false;
   let row;
 
@@ -122,7 +124,7 @@ function nvd3Vis(slice, payload) {
       svg = d3.select(slice.selector).append('svg');
 // ---> para ponerla horizontal
       //(function(){console.log(barchartWidth()); return 1})()
-      if (payload.form_data.bar_stacked) {
+      if (fd.bar_stacked) {
           svg.attr("transform","rotate(90)");
       }
     }
@@ -202,7 +204,7 @@ function nvd3Vis(slice, payload) {
         chart.width(width);
 
 // ------>  Si es un diagrama de barras apiladas entonces los labels se ponen horizontales
-        if (payload.form_data.bar_stacked) {
+        if (fd.bar_stacked) {
           chart.rotateLabels(-90);
         }
         break;
@@ -305,15 +307,12 @@ function nvd3Vis(slice, payload) {
     if (vizType === 'bullet') {
       height = Math.min(height, 50);
     }
-    // cambio para horizontal en barras apiladas
-    if (vizType === 'dist_bar' && payload.form_data.bar_stacked) {
-      height = barchartWidth();
-    }
+
     chart.height(height);
 
     slice.container.css('height', height + 'px');
 // cambio para horizontal en barras apiladas
-    if (vizType === 'dist_bar' && payload.form_data.bar_stacked) {
+    if (vizType === 'dist_bar' && fd.bar_stacked) {
       height = barchartWidth();
       chart.height(height);
       slice.container.css('height', height + 'px');
@@ -363,6 +362,7 @@ function nvd3Vis(slice, payload) {
       chart.color(d => category21(d[colorKey]));
     }
 
+
     if (fd.x_axis_label && fd.x_axis_label !== '' && chart.xAxis) {
       let distance = 0;
       if (fd.bottom_margin && !isNaN(fd.bottom_margin)) {
@@ -378,6 +378,32 @@ function nvd3Vis(slice, payload) {
 
     if (fd.bottom_margin === 'auto') {
       if (vizType === 'dist_bar') {
+//-------------> cambiar color solo para genero
+        if (fd.x_axis_label === 'Genero'){
+        //chart.barColor(d3.scale.category20().range())
+        chart.barColor(['#ff3842' ,'#1e5daf'])
+
+        }
+
+
+//-------------> cambiar color para otra grafica que diga categorias en eje x.
+        if (fd.x_axis_label === 'Categorias'){
+        chart.barColor(d3.scale.category20().range())
+        //chart.barColor(['#ff3842' ,'#1e5daf'])
+
+        }
+        /*
+        if (fd.x_axis_label === 'Genero'){
+            chart.color(function(d) {
+                if (d.values[0].x ==='f') {
+                  (function(){console.log(d); return 1})();
+                  return "red";
+                } else if (d.values[1].x ==='m') {
+                  (function(){console.log(d); return 1})();
+                  return "blue";}
+              })
+        }
+        */
         const stretchMargin = calculateStretchMargins(payload);
         chart.margin({ bottom: stretchMargin });
       } else {
@@ -455,7 +481,7 @@ function nvd3Vis(slice, payload) {
       }
 
 // ------>  Si es un diagrama de barras apiladas horizontal
-      if (payload.form_data.bar_stacked) {
+      if (fd.bar_stacked) {
         // render horizontal chart
         svg
         .datum(payload.data)

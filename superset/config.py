@@ -144,7 +144,7 @@ LANGUAGES = {
     'en': {'flag': 'us', 'name': 'English'},
     # 'it': {'flag': 'it', 'name': 'Italian'},
     # 'fr': {'flag': 'fr', 'name': 'French'},
-    'es': {'flag': 'es', 'name': 'Spanish'},
+    # 'es': {'flag': 'es', 'name': 'Spanish'},
     # 'zh': {'flag': 'cn', 'name': 'Chinese'},
 }
 # ---------------------------------------------------

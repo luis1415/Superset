@@ -257,8 +257,8 @@ class BaseViz(object):
             print(u"---------------Modificando payload: tipo de grafica para poner porcentajes-------------------------")
 
             if payload['form_data'][u'viz_type'] == 'histogram':
-                pprint.pprint(payload, depth=2)
-                # payload['nuevo_dato'] = 'nuevo_dato'
+
+                payload['nuevo_dato'] = 'nuevo_dato'
 
             if 'dist_bar' == payload['form_data'][u'viz_type'] and payload['form_data'][u'y_axis_format'] == u'.3%':
                 print('Porcentaje en distribucion de barras')
@@ -273,7 +273,20 @@ class BaseViz(object):
                     for i in range(len(payload['data'])):
                         for j in payload['data'][i]['values']:
                             if not math.isnan(j[u'y']):
+                                aux = j[u'y']
                                 j[u'y'] = j[u'y'] / total
+                                j[u'z'] = str(aux) + " " + str(j[u'y'])
+                                print(j[u'z'])
+            if 'pie' == payload['form_data'][u'viz_type']:
+                print(payload['data'][0])
+                total_p = 0
+                for i in range(len(payload['data'])):
+                    total_p += payload['data'][i][u'y']
+
+                for i in range(len(payload['data'])):
+                    payload['data'][i][u'y'] = str((payload['data'][i][u'y'] * 100) / total_p)
+
+                print(total_p)
 
             '''------------------------------------------------------------------------------------------------------'''
             if PY3:

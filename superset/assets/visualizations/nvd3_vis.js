@@ -315,7 +315,7 @@ function nvd3Vis(slice, payload) {
     if (vizType === 'dist_bar' && fd.bar_stacked) {
       height = barchartWidth();
       chart.height(height);
-      slice.container.css('height', height + 'px');
+      slice.container.css('height', width + 'px');
     }
     if ((vizType === 'line' || vizType === 'area') && fd.rich_tooltip) {
       chart.useInteractiveGuideline(true);

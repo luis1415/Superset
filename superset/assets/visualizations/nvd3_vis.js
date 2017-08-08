@@ -21,7 +21,7 @@ const BREAKPOINTS = {
 const addTotalBarValues = function (svg, chart, data, stacked, axisFormat) {
   const format = d3.format(axisFormat || '.3s');
   const countSeriesDisplayed = data.length;
-
+  //(function(){console.log(data); return 1})()
   const totalStackedValues = stacked && data.length !== 0 ?
     data[0].values.map(function (bar, iBar) {
       const bars = data.map(function (series) {
@@ -51,7 +51,8 @@ const addTotalBarValues = function (svg, chart, data, stacked, axisFormat) {
       const t = groupLabels.append('text')
         .attr('x', xPos) // rough position first, fine tune later
         .attr('y', yPos - 5)
-        .text(format(stacked ? totalStackedValues[index] : d.y))
+//aqui cambie el d.y por d.z/100
+        .text(format(stacked ? totalStackedValues[index] : d.l/100))
         .attr('transform', transformAttr)
         .attr('class', 'bar-chart-label');
       const labelWidth = t.node().getBBox().width;
@@ -392,6 +393,12 @@ function nvd3Vis(slice, payload) {
         //chart.barColor(['#ff3842' ,'#1e5daf'])
 
         }
+
+        if (fd.x_axis_label === '.'){
+        chart.barColor(d3.scale.category20().range())
+        //chart.barColor(['#ff3842' ,'#1e5daf'])
+        }
+
         /*
         if (fd.x_axis_label === 'Genero'){
             chart.color(function(d) {
@@ -507,3 +514,5 @@ function nvd3Vis(slice, payload) {
 }
 
 module.exports = nvd3Vis;
+
+

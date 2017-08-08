@@ -4,6 +4,7 @@ import { category21 } from '../javascripts/modules/colors';
 require('./histogram.css');
 
 function histogram(slice, payload) {
+  var total = 0;
   const div = d3.select(slice.selector);
   const draw = function (data, numBins) {
     // Set Margins
@@ -98,6 +99,9 @@ function histogram(slice, payload) {
       } else {
         padding = -8.0;
       }
+      var total = total + d.y;
+      (function(){console.log(total); return 1})()
+
       return y(d.y) - padding;
     })
     .attr('x', d => x(d.x) + (x.rangeBand() / 2))

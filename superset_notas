@@ -22,4 +22,5 @@ Para rotar la grafica .attr("transform","rotate(45)") nvd3_vis.js en la linea 12
 Para rotar los labels es en la linea 123, 204, 315 y 458 en el render
 
 db:
-70190225-42960 raras
+la base de datos está en la carpeta de database_dashboards es de sqlite3 y se pone en una carpeta oculta que se llama
+.superset
